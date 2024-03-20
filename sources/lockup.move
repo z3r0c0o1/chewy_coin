@@ -134,10 +134,8 @@ module coin_address::lockup {
         let vault_address = assert_vault_address(user_address);
         let vault = borrow_global_mut<ChewyVault>(vault_address);
 
-        let claimable_coins = vault.initial_amount - vault.claimed_coins;
-        if (claimable_coins < amount) {
-            amount = claimable_coins;
-        };
+        let remaining_coins = vault.initial_amount - vault.claimed_coins;
+        let amount = math64::min(remaining_coins, amount);
         if (amount == 0) {
             return
         };
@@ -158,16 +156,14 @@ module coin_address::lockup {
         };
         // Otherwise, calculate how many coins are unlockable but not yet claimed
         let elapsed_time = now - vault.start_time_sec;
-        let time_unlocked = (vault.initial_amount * elapsed_time) / vault.lockup_secs;
-        time_unlocked - vault.claimed_coins
+        let unlocked_coins = math64::mul_div(vault.initial_amount, elapsed_time, vault.lockup_secs);
+        unlocked_coins - vault.claimed_coins
     }
 
     public fun assert_vault_address(user_address: address): address {
         let vault_address = vault_address_inline(user_address);
-        if (exists<ChewyVault>(vault_address)) {
-            return vault_address
-        };
-        abort E_VAULT_DOES_NOT_EXIST
+        assert!(exists<ChewyVault>(vault_address), E_VAULT_DOES_NOT_EXIST);
+        vault_address
     }
 
     #[view]
