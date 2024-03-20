@@ -12,6 +12,7 @@ module coin_address::coin {
 
     friend coin_address::airdrop;
     friend coin_address::lockup;
+    friend coin_address::claims;
 
     const COIN_NAME: vector<u8> = b"Chewy";
     const SYM: vector<u8> = b"CHEWY";

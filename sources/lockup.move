@@ -80,6 +80,11 @@ module coin_address::lockup {
         assert!(chewy_coin::deployer_balance() == 0, 99002);
     }
 
+    #[test_only]
+    public fun initialize_test(deployer: &signer) {
+        initialize(deployer);
+    }
+
     public entry fun create_vault(deployer: &signer, for_user: address, lock_amount: u64, lockup_secs: u64) {
         admin::assert_admin(deployer);
 
