@@ -149,5 +149,13 @@ module coin_address::claims {
         claim(user1);
         assert!(coin::balance<Chewy>(user1_address) == 100, 20);
         assert!(claimable(user1_address) == 0, 21);
+
+        increase_claim(deployer, user1_address, 200);
+        assert!(coin::balance<Chewy>(@coin_address) == start_balance - 300, 30);
+        assert!(claimable(user1_address) == 200, 31);
+
+        claim(user1);
+        assert!(coin::balance<Chewy>(user1_address) == 300, 40);
+        assert!(claimable(user1_address) == 0, 41);
     }
 }
