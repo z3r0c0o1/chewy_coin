@@ -35,7 +35,7 @@ module coin_address::lockup {
         transfer_ref: TransferRef,
     }
 
-    entry fun initialize(deployer: &signer) {
+    fun init_module(deployer: &signer) {
         chewy_coin::initialize_module(deployer);
 
         let total_supply = chewy_coin::supply();
@@ -82,7 +82,7 @@ module coin_address::lockup {
 
     #[test_only]
     public fun initialize_test(deployer: &signer) {
-        initialize(deployer);
+        init_module(deployer);
     }
 
     public entry fun create_vault(deployer: &signer, for_user: address, lock_amount: u64, lockup_secs: u64) {
@@ -233,6 +233,6 @@ module coin_address::lockup {
     )]
     fun test_init(framework: &signer, deployer: &signer) {
         timestamp::set_time_has_started_for_testing(framework);
-        initialize(deployer);
+        init_module(deployer);
     }
 }

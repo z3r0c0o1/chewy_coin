@@ -27,7 +27,7 @@ module coin_address::claims {
         claims: Table<address, Coin<Chewy>>
     }
 
-    entry fun initialize(deployer: &signer) {
+    fun init_module(deployer: &signer) {
         // Only publisher can call this function
         assert!(@coin_address == signer::address_of(deployer), E_NOT_DEPLOYER);
 
@@ -123,7 +123,7 @@ module coin_address::claims {
 
     #[test_only]
     fun init_and_get_coins(deployer: &signer): Coin<Chewy> {
-        initialize(deployer);
+        init_module(deployer);
         coin_address::coin::initialize_module(deployer);
         coin_address::coin::withdraw_coins(1000)
     }
