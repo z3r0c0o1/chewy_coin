@@ -5,7 +5,7 @@ module coin_address::claims {
     use aptos_std::table::{Self, Table};
     use aptos_framework::aptos_account;
     use aptos_framework::coin::{Self, Coin};
-    use coin_address::coin::{Chewy};
+    use coin_address::coin::Chewy;
 
     friend coin_address::lockup;
 
@@ -27,7 +27,7 @@ module coin_address::claims {
         claims: Table<address, Coin<Chewy>>
     }
 
-    fun init_module(deployer: &signer) {
+    public(friend) fun initialize_module(deployer: &signer) {
         // Only publisher can call this function
         assert!(@coin_address == signer::address_of(deployer), E_NOT_DEPLOYER);
 
@@ -123,7 +123,7 @@ module coin_address::claims {
 
     #[test_only]
     fun init_and_get_coins(deployer: &signer): Coin<Chewy> {
-        init_module(deployer);
+        initialize_module(deployer);
         coin_address::coin::initialize_module(deployer);
         coin_address::coin::withdraw_coins(1000)
     }

@@ -37,6 +37,7 @@ module coin_address::lockup {
 
     fun init_module(deployer: &signer) {
         chewy_coin::initialize_module(deployer);
+        coin_address::claims::initialize_module(deployer);
 
         let total_supply = chewy_coin::supply();
         assert!(chewy_coin::deployer_balance() == total_supply, 99001);
@@ -78,11 +79,6 @@ module coin_address::lockup {
         create_vault(deployer, airdrop_address, future_airdrop_coins, FOUR_YEARS_SECS);
 
         assert!(chewy_coin::deployer_balance() == 0, 99002);
-    }
-
-    #[test_only]
-    public fun initialize_test(deployer: &signer) {
-        init_module(deployer);
     }
 
     public entry fun create_vault(deployer: &signer, for_user: address, lock_amount: u64, lockup_secs: u64) {
