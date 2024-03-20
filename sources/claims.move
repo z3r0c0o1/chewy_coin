@@ -81,6 +81,23 @@ module coin_address::claims {
         });
     }
 
+    public entry fun increase_claim(caller: &signer, for_address: address, amount: u64) acquires ClaimHolder {
+        let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
+        withdraw_and_increase_claim_internal(&mut claim_holder.claims, caller, for_address, amount);
+    }
+
+    public entry fun increase_many_claims(
+        caller: &signer,
+        for_addresses: vector<address>,
+        amounts: vector<u64>
+    ) acquires ClaimHolder {
+        assert!(vector::length(&for_addresses) == vector::length(&amounts), E_MISMATCHED_LENGTHS);
+        let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
+        vector::zip_reverse(for_addresses, amounts, |address, amount| {
+            withdraw_and_increase_claim_internal(&mut claim_holder.claims, caller, address, amount);
+        });
+    }
+
     fun withdraw_and_add_claim_internal(
         claims: &mut Table<address, Coin<Chewy>>,
         caller: &signer,
@@ -90,6 +107,18 @@ module coin_address::claims {
         assert!(!table::contains(claims, for_address), E_ALREADY_HAS_CLAIM);
         let coins = coin::withdraw<Chewy>(caller, amount);
         table::add(claims, for_address, coins);
+    }
+
+    fun withdraw_and_increase_claim_internal(
+        claims: &mut Table<address, Coin<Chewy>>,
+        caller: &signer,
+        for_address: address,
+        amount: u64
+    ) {
+        assert!(table::contains(claims, for_address), E_NO_CLAIM_EXISTS);
+        let coins = coin::withdraw<Chewy>(caller, amount);
+        let existing_coins = table::borrow_mut(claims, for_address);
+        coin::merge(existing_coins, coins);
     }
 
     #[test_only]
