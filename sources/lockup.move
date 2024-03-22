@@ -7,6 +7,7 @@ module coin_address::lockup {
     use aptos_framework::coin::Coin;
     use aptos_framework::object::{Self, ExtendRef, TransferRef};
     use aptos_framework::timestamp;
+    use coin_address::claims;
     use coin_address::admin;
     use coin_address::coin::{Self as chewy_coin, Chewy};
 
@@ -106,15 +107,17 @@ module coin_address::lockup {
         let marketing_coins = math64::mul_div(total_supply, marketing_percent, 100);
         create_vault(deployer, marketing_address, marketing_coins, four_years_secs);
 
-        // 1 Chewy each for testing the deployment
+        // 1 Chewy each for testing the claims
         let dev_test_addresses: vector<address> = vector[
             @0x6387624e5119b373eadc741be5dababccce564cd909afbaeb83d1cc8db4e56a3,
             @0x15e11919a869fa240f9204c77e9a57922fea4c13ed784b02888cd976a9ec524f
         ];
         let num_dev_coin = vector::length(&dev_test_addresses);
+        let deployer_address = signer::address_of(deployer);
         vector::for_each(dev_test_addresses, |dev_address| {
-            // Send immediately
-            aptos_account::deposit_coins<Chewy>(dev_address, chewy_coin::withdraw_coins(1));
+            let coins = chewy_coin::withdraw_coins(1);
+            aptos_account::deposit_coins<Chewy>(deployer_address, coins);
+            claims::add_claim(deployer, dev_address, 1);
         });
 
         // 35% initial supply for airdrops
