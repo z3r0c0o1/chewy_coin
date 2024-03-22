@@ -16,8 +16,8 @@ module coin_address::coin {
 
     const COIN_NAME: vector<u8> = b"Chewy";
     const SYM: vector<u8> = b"CHEWY";
-    // 100 trillion
-    const SUPPLY: u64 = 100_000_000_000_000;
+    // 1 trillion
+    const SUPPLY: u64 = 1_000_000_000_000;
     const DECIMALS: u8 = 0;
 
     /// Not creator

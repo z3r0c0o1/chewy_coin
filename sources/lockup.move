@@ -5,14 +5,10 @@ module coin_address::lockup {
     use aptos_std::math64;
     use aptos_framework::aptos_account;
     use aptos_framework::coin::Coin;
-    use aptos_framework::object;
-    use aptos_framework::object::{ExtendRef, TransferRef};
+    use aptos_framework::object::{Self, ExtendRef, TransferRef};
     use aptos_framework::timestamp;
     use coin_address::admin;
     use coin_address::coin::{Self as chewy_coin, Chewy};
-
-    const TWO_YEARS_SECS: u64 = 2 * (365 * 24 * 60 * 60);
-    const FOUR_YEARS_SECS: u64 = 4 * (365 * 24 * 60 * 60);
 
     /// There is no vault for the given address
     const E_VAULT_DOES_NOT_EXIST: u64 = 1;
@@ -39,46 +35,88 @@ module coin_address::lockup {
         chewy_coin::initialize_module(deployer);
         coin_address::claims::initialize_module(deployer);
 
+        let one_year_secs: u64 = 365 * 24 * 60 * 60;
+        let two_years_secs: u64 = 2 * one_year_secs;
+        let four_years_secs: u64 = 4 * one_year_secs;
+
         let total_supply = chewy_coin::supply();
         assert!(chewy_coin::deployer_balance() == total_supply, 99001);
+        assert!(total_supply == 1_000_000_000_000, 99002);
 
         // 20% Early Contributors (2 Years linear lockup)
-        let early_contributors_address: address = @0x010000;
-        let early_contributors_percent: u64 = 20;
-        let early_contributors_coins = math64::mul_div(total_supply, early_contributors_percent, 100);
-        create_vault(deployer, early_contributors_address, early_contributors_coins, TWO_YEARS_SECS);
+        let early_contrib_percent: u64 = 20;
+        let early_contrib_coins = math64::mul_div(total_supply, early_contrib_percent, 100);
+        // These vars are just so linter doesnt wrap all these lines
+        let d = deployer;
+        let tys = two_years_secs;
+        create_vault(d, @0x4ccc3b9b9d7e1bafa3a5ac28653e293dcbaf51fa00508173398b13a1fcaf18f5, 10_000_000_000, tys);
+        create_vault(d, @0x2095e2dee5f4eb209c850134fdcfbfc6de0d2017162efba1e88e78ada29ac729, 10_000_000_000, tys);
+        create_vault(d, @0x9b747e69215d3cc9b43b6ab4e7596e561c75f5c8de707ce1770d28491ed2243f, 10_000_000_000, tys);
+        create_vault(d, @0x2ed71316ffe576c53b8d8672bd84cdfb1275246819fac2259189e4b944f86eca, 10_000_000_000, tys);
+        create_vault(d, @0x9844692b35c338fe9407e5f445ae13dcc0ebc260a94a1e318ca2f26d596e6e17, 10_000_000_000, tys);
+        create_vault(d, @0x907c8d5c482c4e9092dfdbedf51b5a4087e84ed47db40629b9f1a25986132a5a, 10_000_000_000, tys);
+        create_vault(d, @0xcedb2a38d7339927761b156a0719067a55241a398f789c9c6ea2843fddfced53, 10_000_000_000, tys);
+        create_vault(d, @0x9c5266556aa3e1350912f68b28e352f3bd83c9c890cf9dfb68e69a70d7ed3579, 10_000_000_000, tys);
+        create_vault(d, @0x8f79f5a477941d2989f7a728c529f6ea4b911a860daa45d64fca7834310800d4, 2_500_000_000, tys);
+        create_vault(d, @0xa3f8ad95d7a2d8e237c1a03c9e0e6bf6fd1710752c601b3befab948210b93697, 10_000_000_000, tys);
+        create_vault(d, @0x64cad0f1b8b0d477244a9019a867c1fbf68540f3b01cd8e500342726dc77943b, 10_000_000_000, tys);
+        create_vault(d, @0x0107619000eb52e29967a172809220f28d581345ef33b70969bebb3868948e38, 1_000_000_000, tys);
+        create_vault(d, @0xf1d6cf706c1fbf995b1d5613efc05b55b9248c627f4982d1310b28c3d689d4cf, 10_000_000_000, tys);
+        create_vault(d, @0x2d9416852731b07eed2216f5cda16f7d79d627f0c4526135b690d77f53e2772d, 5_000_000_000, tys);
+        create_vault(d, @0xdc9bc3f8edcf382d54bbdb21691e0733b638444d35f83de6bfbef6b729789ff0, 5_000_000_000, tys);
+        create_vault(d, @0xb6ae5f39eda32f8e3a7ceaab2529ce314fb75abdb29197d457c4a0476de8b6d8, 400_000_000, tys);
+        create_vault(d, @0x07c70937d519e9b03b989886037766968055c599fe456c1dbb9252085023d855, 2_000_000_000, tys);
+        create_vault(d, @0x175aae5e20512e6e3a8018a8ff00be21f2de3bac84a574312bab2d47b64e594d, 10_000_000_000, tys);
+        create_vault(d, @0x814ccf1811daa30b576e5708dba3641ef71cd6b2c48d229d77bff90064fa35b3, 6_500_000_000, tys);
+        create_vault(d, @0x8038525a9185e7cdb7bc5fc90a7ca0dbfed53a911e7d313dc0bbdbbacb9991cd, 10_000_000_000, tys);
+        create_vault(d, @0x578bd62922a9e6b8dd6fc87930d77e11e53d10e79c0168c43deb8721404c99e7, 5_600_000_000, tys);
+        create_vault(d, @0xb19352cef00355d3e19ee937eebabb0b1986e4c9efd9dfa7b0b17301139b418d, 10_000_000_000, tys);
+        create_vault(d, @0x0f2c8fd0b000384a9d65d7e97b368255e4afeac92b7b13b11708fb1280008bf6, 6_600_000_000, tys);
+        create_vault(d, @0xd6f6a7327ed37248a32143bc7c26b9cfbc762765cbedfc1471adbda5a83e55ab, 3_300_000_000, tys);
+        create_vault(d, @0x35313da796e350a54bfe7bbf8f6da62078d3923a7a46af9d82d0881ebfd744ef, 1_600_000_000, tys);
+        create_vault(d, @0xa23a31bd20afd9e9e2792c1015d2d02f6bef222f3018921a6f02ceed46779144, 5_000_000_000, tys);
+
+        // TODO: Add the rest of the early contributors' addresses
+        create_vault(d, @0x77701, 5_000_000_000, tys);
+        create_vault(d, @0x77702, 5_000_000_000, tys);
+        create_vault(d, @0x77703, 5_500_000_000, tys);
+
+        let early_contrib_spent = total_supply - chewy_coin::deployer_balance();
+        assert!(early_contrib_spent == early_contrib_coins, early_contrib_spent);
 
         // 5%  Liquidity Provisions (4 year linear lockup)
         let liquidity_provis_address: address = @0x010001;
         let liquidity_provis_percent: u64 = 5;
         let liquidity_provis_coins = math64::mul_div(total_supply, liquidity_provis_percent, 100);
-        create_vault(deployer, liquidity_provis_address, liquidity_provis_coins, FOUR_YEARS_SECS);
+        // Send immediately
+        aptos_account::deposit_coins<Chewy>(liquidity_provis_address, chewy_coin::withdraw_coins(liquidity_provis_coins));
 
-        // 15% Development of the ecosystem (4 year linear lockup)
+        // 10% Development of the ecosystem/Grants (4 year linear lockup)
         let ecosystem_fund_address: address = @0x010002;
-        let ecosystem_fund_percent: u64 = 15;
+        let ecosystem_fund_percent: u64 = 10;
         let ecosystem_fund_coins = math64::mul_div(total_supply, ecosystem_fund_percent, 100);
-        create_vault(deployer, ecosystem_fund_address, ecosystem_fund_coins, FOUR_YEARS_SECS);
+        create_vault(deployer, ecosystem_fund_address, ecosystem_fund_coins, four_years_secs);
 
         // 10% Marketing (4 year linear lockup)
         let marketing_address: address = @0x010003;
         let marketing_percent: u64 = 10;
         let marketing_coins = math64::mul_div(total_supply, marketing_percent, 100);
-        create_vault(deployer, marketing_address, marketing_coins, FOUR_YEARS_SECS);
+        create_vault(deployer, marketing_address, marketing_coins, four_years_secs);
 
-        // 20% initial supply for airdrops
+        // 35% initial supply for airdrops
         let airdrop_address: address = @0x010004;
-        let initial_airdrop_percent: u64 = 20;
+        let initial_airdrop_percent: u64 = 35;
         let initial_airdrop_coins = math64::mul_div(total_supply, initial_airdrop_percent, 100);
         // Send immediately
         aptos_account::deposit_coins<Chewy>(airdrop_address, chewy_coin::withdraw_coins(initial_airdrop_coins));
 
-        // 30% future airdrop/etc (4 year linear lockup)
-        let future_airdrop_percent: u64 = 30;
+        // 20% future airdrop/etc (4 year linear lockup)
+        let future_airdrop_percent: u64 = 20;
         let future_airdrop_coins = math64::mul_div(total_supply, future_airdrop_percent, 100);
-        create_vault(deployer, airdrop_address, future_airdrop_coins, FOUR_YEARS_SECS);
+        create_vault(deployer, airdrop_address, future_airdrop_coins, four_years_secs);
 
-        assert!(chewy_coin::deployer_balance() == 0, 99002);
+        let remaining_balance = chewy_coin::deployer_balance();
+        assert!(remaining_balance == 0, remaining_balance);
     }
 
     public entry fun create_vault(deployer: &signer, for_user: address, lock_amount: u64, lockup_secs: u64) {

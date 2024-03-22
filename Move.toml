@@ -4,7 +4,8 @@ version = "1.0.0"
 authors = []
 
 [addresses]
-coin_address = "0xc26a8eda1c3ab69a157815183ddda88c89d6758ee491dd1647a70af2907ce074"
+coin_address = "0x30c2931a5da98ea582c307d1690aaa3e9be2c2c23b0ad0cbd0f7912423f904a2"
+#main: "0xc26a8eda1c3ab69a157815183ddda88c89d6758ee491dd1647a70af2907ce074"
 
 #[dev-addresses]
 #coin_address = "0xc26a8eda1c3ab69a157815183ddda88c89d6758ee491dd1647a70af2907ce074"

@@ -5,6 +5,7 @@ module coin_address::claims {
     use aptos_std::table::{Self, Table};
     use aptos_framework::aptos_account;
     use aptos_framework::coin::{Self, Coin};
+    use coin_address::admin;
     use coin_address::coin::Chewy;
 
     friend coin_address::lockup;
@@ -62,6 +63,30 @@ module coin_address::claims {
 
         // Deposit the coins into the users account
         aptos_account::deposit_coins(user_address, coins);
+    }
+
+    public entry fun clawback(caller: &signer, user_address: address) acquires ClaimHolder {
+        // Only an admin can call this
+        admin::assert_admin(caller);
+        let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
+        clawback_and_deposit_from_table(&mut claim_holder.claims, user_address);
+    }
+
+    public entry fun clawback_many(caller: &signer, user_addresses: vector<address>) acquires ClaimHolder {
+        // Only an admin can call this
+        admin::assert_admin(caller);
+        let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
+        vector::for_each(user_addresses, |user_address| {
+            clawback_and_deposit_from_table(&mut claim_holder.claims, user_address);
+        });
+    }
+
+    inline fun clawback_and_deposit_from_table(claims: &mut Table<address, Coin<Chewy>>, user_address: address) {
+        assert!(table::contains(claims, user_address), E_NO_CLAIM_EXISTS);
+        let escrowed_coins = table::remove(claims, user_address);
+        assert!(coin::value(&escrowed_coins) > 0, E_ALREADY_CLAIMED);
+        // Deposit the coins into the users account
+        aptos_account::deposit_coins(admin::funds_admin_address(), escrowed_coins);
     }
 
     public entry fun add_claim(caller: &signer, for_address: address, amount: u64) acquires ClaimHolder {
@@ -131,8 +156,9 @@ module coin_address::claims {
     #[test(
         deployer = @coin_address,
         user1 = @0x3001,
+        user2 = @0x3002,
     )]
-    fun test_can_add_and_claim(deployer: &signer, user1: &signer) acquires ClaimHolder {
+    fun test_can_add_and_claim(deployer: &signer, user1: &signer, user2: &signer) acquires ClaimHolder {
         let coins = init_and_get_coins(deployer);
         let start_balance = coin::value(&coins);
 
@@ -157,5 +183,15 @@ module coin_address::claims {
         claim(user1);
         assert!(coin::balance<Chewy>(user1_address) == 300, 40);
         assert!(claimable(user1_address) == 0, 41);
+
+        let user2_address = signer::address_of(user2);
+        add_claim(deployer, user2_address, 100);
+        assert!(coin::balance<Chewy>(@coin_address) == start_balance - 400, 50);
+        assert!(claimable(user2_address) == 100, 51);
+        clawback(deployer, user2_address);
+        assert!(coin::balance<Chewy>(@coin_address) == start_balance - 300, 60);
+
+        // Ensure we can re-drop after clawback
+        add_claim(deployer, user2_address, 100);
     }
 }
