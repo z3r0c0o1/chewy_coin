@@ -85,28 +85,43 @@ module coin_address::lockup {
         assert!(early_contrib_spent == early_contrib_coins, early_contrib_spent);
 
         // 5%  Liquidity Provisions (4 year linear lockup)
-        let liquidity_provis_address: address = @0x010001;
+        let liquidity_provis_address: address = @0x51a17e598d3ab1ca671204114a21f7dbec8f42d6723691a15607b589d9347d9e;
         let liquidity_provis_percent: u64 = 5;
         let liquidity_provis_coins = math64::mul_div(total_supply, liquidity_provis_percent, 100);
         // Send immediately
-        aptos_account::deposit_coins<Chewy>(liquidity_provis_address, chewy_coin::withdraw_coins(liquidity_provis_coins));
+        aptos_account::deposit_coins<Chewy>(
+            liquidity_provis_address,
+            chewy_coin::withdraw_coins(liquidity_provis_coins)
+        );
 
         // 10% Development of the ecosystem/Grants (4 year linear lockup)
-        let ecosystem_fund_address: address = @0x010002;
+        let ecosystem_fund_address: address = @0x46f7a9640521b63db61754bf59c05e9a447b8fc4c24d2b6ea43120c359c24796;
         let ecosystem_fund_percent: u64 = 10;
         let ecosystem_fund_coins = math64::mul_div(total_supply, ecosystem_fund_percent, 100);
         create_vault(deployer, ecosystem_fund_address, ecosystem_fund_coins, four_years_secs);
 
         // 10% Marketing (4 year linear lockup)
-        let marketing_address: address = @0x010003;
+        let marketing_address: address = @0xc61b9fb26138134b1fd083f713ca118e3b9d8938ddc68f6c441f4c7680fd55d8;
         let marketing_percent: u64 = 10;
         let marketing_coins = math64::mul_div(total_supply, marketing_percent, 100);
         create_vault(deployer, marketing_address, marketing_coins, four_years_secs);
 
+        // 1 Chewy each for testing the deployment
+        let dev_test_addresses: vector<address> = vector[
+            @0x6387624e5119b373eadc741be5dababccce564cd909afbaeb83d1cc8db4e56a3,
+            @0x15e11919a869fa240f9204c77e9a57922fea4c13ed784b02888cd976a9ec524f
+        ];
+        let num_dev_coin = vector::length(&dev_test_addresses);
+        vector::for_each(dev_test_addresses, |dev_address| {
+            // Send immediately
+            aptos_account::deposit_coins<Chewy>(dev_address, chewy_coin::withdraw_coins(1));
+        });
+
         // 35% initial supply for airdrops
-        let airdrop_address: address = @0x010004;
+        let airdrop_address: address = admin::airdropper_address();
         let initial_airdrop_percent: u64 = 35;
-        let initial_airdrop_coins = math64::mul_div(total_supply, initial_airdrop_percent, 100);
+        // We withhold the dev address coins from here; is very minimal
+        let initial_airdrop_coins = math64::mul_div(total_supply, initial_airdrop_percent, 100) - num_dev_coin;
         // Send immediately
         aptos_account::deposit_coins<Chewy>(airdrop_address, chewy_coin::withdraw_coins(initial_airdrop_coins));
 
