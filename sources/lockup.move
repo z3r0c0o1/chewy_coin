@@ -72,15 +72,13 @@ module coin_address::lockup {
         create_vault(d, @0x8038525a9185e7cdb7bc5fc90a7ca0dbfed53a911e7d313dc0bbdbbacb9991cd, 10_000_000_000, tys);
         create_vault(d, @0x578bd62922a9e6b8dd6fc87930d77e11e53d10e79c0168c43deb8721404c99e7, 5_600_000_000, tys);
         create_vault(d, @0xb19352cef00355d3e19ee937eebabb0b1986e4c9efd9dfa7b0b17301139b418d, 10_000_000_000, tys);
-        create_vault(d, @0x0f2c8fd0b000384a9d65d7e97b368255e4afeac92b7b13b11708fb1280008bf6, 6_600_000_000, tys);
+        create_vault(d, @0x0f2c8fd0b000384a9d65d7e97b368255e4afeac92b7b13b11708fb1280008bf6, 3_300_000_000, tys);
         create_vault(d, @0xd6f6a7327ed37248a32143bc7c26b9cfbc762765cbedfc1471adbda5a83e55ab, 3_300_000_000, tys);
         create_vault(d, @0x35313da796e350a54bfe7bbf8f6da62078d3923a7a46af9d82d0881ebfd744ef, 1_600_000_000, tys);
         create_vault(d, @0xa23a31bd20afd9e9e2792c1015d2d02f6bef222f3018921a6f02ceed46779144, 5_000_000_000, tys);
-
-        // TODO: Add the rest of the early contributors' addresses
-        create_vault(d, @0x77701, 5_000_000_000, tys);
-        create_vault(d, @0x77702, 5_000_000_000, tys);
-        create_vault(d, @0x77703, 5_500_000_000, tys);
+        create_vault(d, @0xb69057eb3c48340e30820f90283b65364639e74ce0266e0391431bdf7ec14c04, 5_000_000_000, tys);
+        create_vault(d, @0xdbfd48566a4f2fdc09c008198963c8be545b201cfe8c92239c7bc08ad7e14bf2, 5_000_000_000, tys);
+        create_vault(d, @0x6d2add1a815e9acf6b053bcbd41c510484f1ce816ec16a889d8c619153ffcfc8, 8_800_000_000, tys);
 
         let early_contrib_spent = total_supply - chewy_coin::deployer_balance();
         assert!(early_contrib_spent == early_contrib_coins, early_contrib_spent);
