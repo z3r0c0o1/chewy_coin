@@ -83,15 +83,12 @@ module coin_address::lockup {
         let early_contrib_spent = total_supply - chewy_coin::deployer_balance();
         assert!(early_contrib_spent == early_contrib_coins, early_contrib_spent);
 
-        // 5%  Liquidity Provisions (4 year linear lockup)
+        // 5%  Liquidity Provisions: instant unlock
         let liquidity_provis_address: address = @0x51a17e598d3ab1ca671204114a21f7dbec8f42d6723691a15607b589d9347d9e;
         let liquidity_provis_percent: u64 = 5;
         let liquidity_provis_coins = math64::mul_div(total_supply, liquidity_provis_percent, 100);
         // Send immediately
-        aptos_account::deposit_coins<Chewy>(
-            liquidity_provis_address,
-            chewy_coin::withdraw_coins(liquidity_provis_coins)
-        );
+        aptos_account::deposit_coins<Chewy>(liquidity_provis_address, chewy_coin::withdraw_coins(liquidity_provis_coins));
 
         // 10% Development of the ecosystem/Grants (4 year linear lockup)
         let ecosystem_fund_address: address = @0x46f7a9640521b63db61754bf59c05e9a447b8fc4c24d2b6ea43120c359c24796;
