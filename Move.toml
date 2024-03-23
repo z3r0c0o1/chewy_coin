@@ -4,8 +4,10 @@ version = "1.0.0"
 authors = []
 
 [addresses]
-coin_address = "0x1721427afb316260b077d4b352a7554cac98a953d4df15f5bb0797d4f0fb306b"
-#main: "0xc26a8eda1c3ab69a157815183ddda88c89d6758ee491dd1647a70af2907ce074"
+# Test
+#coin_address = "0x1721427afb316260b077d4b352a7554cac98a953d4df15f5bb0797d4f0fb306b"
+# Mainnet
+coin_address = "0xc26a8eda1c3ab69a157815183ddda88c89d6758ee491dd1647a70af2907ce074"
 
 [dependencies]
 [dependencies.AptosFramework]
