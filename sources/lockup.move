@@ -4,7 +4,7 @@ module coin_address::lockup {
     use std::vector;
     use aptos_std::math64;
     use aptos_framework::aptos_account;
-    use aptos_framework::coin::Coin;
+    use aptos_framework::coin::{Self, Coin};
     use aptos_framework::object::{Self, ExtendRef, TransferRef};
     use aptos_framework::timestamp;
     use coin_address::claims;
@@ -192,7 +192,7 @@ module coin_address::lockup {
             return
         };
         vault.claimed_coins = vault.claimed_coins + amount;
-        let coins = chewy_coin::withdraw_coins(amount);
+        let coins = coin::extract(&mut vault.locked_coins, amount);
         aptos_account::deposit_coins<Chewy>(user_address, coins);
     }
 
