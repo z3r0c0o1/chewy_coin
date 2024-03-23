@@ -110,7 +110,7 @@ module coin_address::coin {
 
     /// Retrieves the signer, and ensures it's the owner of the object
     public(friend) fun get_coin_signer_as_admin(caller: &signer): signer acquires CoinController {
-        admin::assert_admin(caller);
+        admin::assert_fund_admin_or_deployer(caller);
         get_coin_signer()
     }
 

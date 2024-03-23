@@ -116,7 +116,7 @@ module coin_address::lockup {
         });
 
         // 35% initial supply for airdrops
-        let airdrop_address: address = admin::airdropper_address();
+        let airdrop_address: address = admin::claim_admin_address();
         let initial_airdrop_percent: u64 = 35;
         // We withhold the dev address coins from here; is very minimal
         let initial_airdrop_coins = math64::mul_div(total_supply, initial_airdrop_percent, 100) - num_dev_coin;
@@ -133,7 +133,7 @@ module coin_address::lockup {
     }
 
     public entry fun create_vault(deployer: &signer, for_user: address, lock_amount: u64, lockup_secs: u64) {
-        admin::assert_admin(deployer);
+        admin::assert_fund_admin_or_deployer(deployer);
 
         let user_address_bytes = bcs::to_bytes(&for_user);
         let constructor = object::create_named_object(deployer, user_address_bytes);

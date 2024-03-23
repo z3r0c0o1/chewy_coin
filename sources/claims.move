@@ -67,14 +67,14 @@ module coin_address::claims {
 
     public entry fun clawback(caller: &signer, user_address: address) acquires ClaimHolder {
         // Only an admin can call this
-        admin::assert_admin_or_airdropper(caller);
+        admin::assert_fund_or_claim_admin(caller);
         let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
         clawback_and_deposit_from_table(&mut claim_holder.claims, user_address);
     }
 
     public entry fun clawback_many(caller: &signer, user_addresses: vector<address>) acquires ClaimHolder {
         // Only an admin can call this
-        admin::assert_admin_or_airdropper(caller);
+        admin::assert_fund_or_claim_admin(caller);
         let claim_holder = borrow_global_mut<ClaimHolder>(@coin_address);
         vector::for_each(user_addresses, |user_address| {
             clawback_and_deposit_from_table(&mut claim_holder.claims, user_address);
@@ -86,7 +86,7 @@ module coin_address::claims {
         let escrowed_coins = table::remove(claims, user_address);
         assert!(coin::value(&escrowed_coins) > 0, E_ALREADY_CLAIMED);
         // Deposit the coins into the users account
-        aptos_account::deposit_coins(admin::airdropper_address(), escrowed_coins);
+        aptos_account::deposit_coins(admin::claim_admin_address(), escrowed_coins);
     }
 
     public entry fun add_claim(caller: &signer, for_address: address, amount: u64) acquires ClaimHolder {
@@ -164,7 +164,7 @@ module coin_address::claims {
 
         let user1_address = signer::address_of(user1);
 
-        aptos_account::deposit_coins(admin::airdropper_address(), coin::extract(&mut coins, 0));
+        aptos_account::deposit_coins(admin::claim_admin_address(), coin::extract(&mut coins, 0));
 
         aptos_account::deposit_coins(@coin_address, coins);
         assert!(coin::balance<Chewy>(@coin_address) == start_balance, 0);
@@ -191,7 +191,7 @@ module coin_address::claims {
         assert!(coin::balance<Chewy>(@coin_address) == start_balance - 400, 50);
         assert!(claimable(user2_address) == 100, 51);
         clawback(deployer, user2_address);
-        assert!(coin::balance<Chewy>(admin::airdropper_address()) == 100, 60);
+        assert!(coin::balance<Chewy>(admin::claim_admin_address()) == 100, 60);
 
         // Ensure we can re-drop after clawback
         add_claim(deployer, user2_address, 100);
